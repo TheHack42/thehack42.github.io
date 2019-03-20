@@ -1,0 +1,45 @@
+.rootme_logo {
+  background-image: url("/img/white_rootme.png");
+}
+
+.logohover {
+  display: inline-block;
+  vertical-align: -6px;
+  background-size: cover;
+  height: 1.5em;
+  width: 1.5em;
+  margin-left: -9px;
+  margin-right: -2px;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+.zoomhover:hover {
+  -moz-transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+.sidebar a:hover, .sidebar a:focus {
+	color: white;
+	text-decoration: none;
+}
+
+.builtwith {
+    text-align: center;
+    font-size: .7rem;
+}
+
+.sidebar {
+	background-color: #304235;
+}
+
+@media (min-width: 992px) {
+  html,
+  body {
+    font-size: 20px; }
+  .content {
+    margin-left: 20rem;
+    margin-right: 2rem;
+    max-width: 50rem; }
+  }
+}

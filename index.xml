@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>My Cyber Sharing</title>
+    <link>https://www.mycybersharing.fr/</link>
+    <description>Recent content on My Cyber Sharing</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr</language>
+    <lastBuildDate>Sun, 17 Feb 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://www.mycybersharing.fr/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://www.mycybersharing.fr/about/</link>
+      <pubDate>Sun, 17 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.mycybersharing.fr/about/</guid>
+      <description>My Cyber Sharing J&amp;rsquo;ai décidé de créer ce blog pour partager de l&amp;rsquo;information sur différents domaines mais principalement sur la sécurité informatique, une passion pour moi. Vous pourrez donc trouver aussi bien des articles sur de la cybersécurité ou bien la robotique mais également l&amp;rsquo;astronomie. De plus, ce blog me permet aussi de m&amp;rsquo;organiser, de regrouper ce que j&amp;rsquo;ai appris sur un sujet et de tout mettre au propre ici.</description>
+    </item>
+    
+    <item>
+      <title>App-Sys: Débuter progressivement</title>
+      <link>https://www.mycybersharing.fr/cybersecu/app_sys_start_gradually/</link>
+      <pubDate>Sun, 17 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.mycybersharing.fr/cybersecu/app_sys_start_gradually/</guid>
+      <description>&amp;ldquo;App-Sys&amp;rdquo;, vous avez dit ? Oui, &amp;ldquo;App-Sys&amp;rdquo; :) C&amp;rsquo;est le principe d&amp;rsquo;exploiter une vulnérabilité applicative principalement liée à une erreur de développement et qui peut finir par aboutir à des corruptions de différentes zones mémoire. L&amp;rsquo;objectif ici c&amp;rsquo;est d&amp;rsquo;aborder pas-à-pas ce domaine en passant par les registres, la structure d&amp;rsquo;un exécutable, la pile, le tas&amp;hellip; bref, des choses compliquées pour un débutant qui souhaite se lancer dans l&amp;rsquo;exploitation de failles systèmes.</description>
+    </item>
+    
+  </channel>
+</rss>

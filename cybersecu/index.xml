@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cybersecu on My Cyber Sharing</title>
+    <link>https://www.mycybersharing.fr/cybersecu/</link>
+    <description>Recent content in Cybersecu on My Cyber Sharing</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr</language>
+    <lastBuildDate>Sun, 17 Feb 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://www.mycybersharing.fr/cybersecu/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>App-Sys: Débuter progressivement</title>
+      <link>https://www.mycybersharing.fr/cybersecu/app_sys_start_gradually/</link>
+      <pubDate>Sun, 17 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.mycybersharing.fr/cybersecu/app_sys_start_gradually/</guid>
+      <description>&amp;ldquo;App-Sys&amp;rdquo;, vous avez dit ? Oui, &amp;ldquo;App-Sys&amp;rdquo; :) C&amp;rsquo;est le principe d&amp;rsquo;exploiter une vulnérabilité applicative principalement liée à une erreur de développement et qui peut finir par aboutir à des corruptions de différentes zones mémoire. L&amp;rsquo;objectif ici c&amp;rsquo;est d&amp;rsquo;aborder pas-à-pas ce domaine en passant par les registres, la structure d&amp;rsquo;un exécutable, la pile, le tas&amp;hellip; bref, des choses compliquées pour un débutant qui souhaite se lancer dans l&amp;rsquo;exploitation de failles systèmes.</description>
+    </item>
+    
+  </channel>
+</rss>
