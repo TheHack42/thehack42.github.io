@@ -3,34 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://www.mycybersharing.fr/about/</loc>
+    <loc>https://www.mycybersharing.com/about/</loc>
     <lastmod>2019-02-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.fr/cybersecu/app_sys_start_gradually/</loc>
+    <loc>https://www.mycybersharing.com/cybersecu/app_sys_start_gradually/</loc>
     <lastmod>2019-02-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.fr/categories/</loc>
+    <loc>https://www.mycybersharing.com/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.fr/cybersecu/</loc>
-    <lastmod>2019-02-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.mycybersharing.fr/</loc>
+    <loc>https://www.mycybersharing.com/cybersecu/</loc>
     <lastmod>2019-02-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.fr/tags/</loc>
+    <loc>https://www.mycybersharing.com/</loc>
+    <lastmod>2019-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.mycybersharing.com/tags/</loc>
     <priority>0</priority>
   </url>
   

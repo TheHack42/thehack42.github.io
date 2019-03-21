@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on My Cyber Sharing</title>
-    <link>https://www.mycybersharing.fr/categories/</link>
+    <link>https://www.mycybersharing.com/categories/</link>
     <description>Recent content in Categories on My Cyber Sharing</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr</language>
     
-	<atom:link href="https://www.mycybersharing.fr/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.mycybersharing.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>
