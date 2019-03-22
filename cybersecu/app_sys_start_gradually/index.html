@@ -171,7 +171,7 @@ Built with <a href="https://gohugo.io">Hugo</a> ❤️ <a href="https://github.c
     
     
     <br/>
-    <i class="fas fa-clock"></i> 11 min read
+    <i class="fas fa-clock"></i> 12 min read
 </div>
 
 
@@ -301,6 +301,8 @@ Pour faire simple, un programme a l&rsquo;impression qu&rsquo;il possède toute 
 
 <p>Voilà pourquoi un programme peut utiliser les mêmes adresses virtuelles mais pas les mêmes adresses physiques. On place en quelque sorte notre programme dans des bacs à sable (<a href="https://fr.wikipedia.org/wiki/Sandbox_(s%C3%A9curit%C3%A9_informatique)">sandbox</a>) et c&rsquo;est le noyau du système d&rsquo;exploitation qui gère les opérations de plus bas niveau en relation avec le matériel.</p>
 
+<p>Les adresses sont utilisées partout et pour tout. Toutes les cases mémoires sont rattachées à une adresse : les fonctions, les variables, les instructions&hellip; Elles permettent d&rsquo;accéder à une zone de la mémoire en utilisant un identifiant, un nombre entier naturel. C&rsquo;est le microprocesseur qui va s&rsquo;occuper d&rsquo;accéder à cette zone mémoire en lui envoyant son adresse.</p>
+
 <h3 id="différents-segments">Différents segments</h3>
 
 <p>Un programme contient plusieurs segments (sous-zone mémoire) qui sont des espaces d&rsquo;adressage virtuel contenant toutes les informations permettant de mener à bien l&rsquo;exécution du programme (des chaînes de caractères, des données, les instructions du programme&hellip;).<br />
@@ -360,7 +362,9 @@ int main() {
 La somme de 4 et 8 est 12
 </code></pre>
 
-<p>Aucune surprise :) Mais du coup qu&rsquo;est-ce qu&rsquo;il se passe concrètement pendant l&rsquo;exécution du programme ?<br />
+<p>La commande &ldquo;gcc&rdquo; (GNU Compiler Collection) est un ensemble de compilateurs capables de compiler divers langages de programmation. Ici, nous l&rsquo;utilisons pour compiler un programme en C. L&rsquo;argument &ldquo;-m32&rdquo; permet de compiler notre programme en 32 bits et ainsi notre programme possédera des adresses de 4 octets.</p>
+
+<p>Mais du coup qu&rsquo;est-ce qu&rsquo;il se passe concrètement pendant l&rsquo;exécution du programme ?<br />
 Tout d&rsquo;abord, le programme commence par exécuter la fonction principale &ldquo;main&rdquo; et dès le début, la fonction &ldquo;addition&rdquo; est appelée (opcode &ldquo;call&rdquo; en assembleur). Regardons à quoi ressemble le code assembleur permettant d&rsquo;effectuer cet appel :</p>
 
 <pre><code>[-------------------------------------code-------------------------------------]
@@ -420,11 +424,11 @@ mov    eax,DWORD PTR [ebp+0xc]
 <p>En français, cela donnerait :</p>
 
 <ul>
-<li>&ldquo;Copier la valeur (<a href="https://fr.wikipedia.org/wiki/Mot_(architecture_informatique)">double mot</a>) pointant en EBP+8 vers le registre EDX&rdquo; (<strong>argument 1</strong>)</li>
-<li>&ldquo;Copier la valeur (<a href="https://fr.wikipedia.org/wiki/Mot_(architecture_informatique)">double mot</a>) pointant en EBP+12 vers le registre EAX&rdquo; (<strong>argument 2</strong>)</li>
+<li>&ldquo;Copier la valeur (DWORD pour <a href="https://fr.wikipedia.org/wiki/Mot_(architecture_informatique)">double mot</a>) pointant en EBP+8 vers le registre EDX&rdquo; (<strong>argument 1</strong>)</li>
+<li>&ldquo;Copier la valeur pointant en EBP+12 vers le registre EAX&rdquo; (<strong>argument 2</strong>)</li>
 </ul>
 
-<p>Comme EBP pointe sur le haut de la stack frame de &ldquo;main&rdquo; alors il suffit de le prendre comme référence. Pour récupérer les arguments, nous devons donc faire <strong>&ldquo;EBP+0x8&rdquo; pour le premier</strong> et <strong>&ldquo;EBP+0xc&rdquo; (0xc = 12) pour le second</strong> (regardez le schéma plus haut).</p>
+<p>Comme EBP pointe sur le haut de la stack frame de &ldquo;main&rdquo; alors il suffit de l&rsquo;utiliser comme référence. Pour récupérer les arguments, nous devons donc faire <strong>&ldquo;EBP+0x8&rdquo; pour le premier</strong> et <strong>&ldquo;EBP+0xc&rdquo; (0xc = 12) pour le second</strong> (regardez le schéma plus haut).</p>
 
 <h4 id="restaurer-la-stack-frame-de-main-épilogue">Restaurer la stack frame de main (épilogue)</h4>
 
@@ -482,6 +486,14 @@ EIP: 0x8048478 (&lt;main+29&gt;:	add    esp,0x10)
 0000| 0xffffc560 --&gt; 0x4 
 0004| 0xffffc564 --&gt; 0x8
 </code></pre>
+
+<p><img src="/img/stack_call.gif" alt="C8086" /></p>
+
+<h3 id="le-mot-de-la-fin">Le mot de la fin</h3>
+
+<p>J&rsquo;espère que ce tuto d&rsquo;introduction sur les failles systèmes vous aura plu et que vous l&rsquo;avez compris dans sa globalité. Si vous l&rsquo;avez apprécié, n&rsquo;hésitez pas à mettre un petit &ldquo;j&rsquo;aime&rdquo; en bas de la page. Si vous avez des questions sur une partie que vous n&rsquo;avez pas comprise ou tout simplement partager votre avis, alors n&rsquo;hésitez pas à commenter la page. Et même (surtout) si j&rsquo;ai fait une boulette.</p>
+
+<p>Maintenant vous êtes prêt pour passer à la suite, l&rsquo;exploitation d&rsquo;un buffer overflow (arrive prochainement) :)</p>
 
   </div>
   
