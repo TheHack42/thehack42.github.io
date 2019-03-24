@@ -20,7 +20,7 @@
       <description>Prérequis Avant de commencer, il est nécessaire d&amp;rsquo;avoir quelques bases en exploitation applicative système.
 Il faut donc connaître le fonctionnement du processeur, les registres, la structure d&amp;rsquo;un programme et surtout le fonctionnement de la pile.
 Pour cela, si ce n&amp;rsquo;est déjà fait, je vous invite à lire mon article &amp;ldquo;Débuter progressivement&amp;rdquo;.
-Quel est le principe d&amp;rsquo;un &amp;ldquo;buffer overflow&amp;rdquo; ? Avant de parler du &amp;ldquo;overflow&amp;rdquo;, nous allons déjà parler du &amp;ldquo;buffer&amp;rdquo;.</description>
+Quel est le principe d&amp;rsquo;un &amp;ldquo;buffer overflow&amp;rdquo; ? Avant de parler de l&amp;rsquo;overflow, nous allons déjà parler du &amp;ldquo;buffer&amp;rdquo;.</description>
     </item>
     
     <item>
@@ -29,7 +29,7 @@ Quel est le principe d&amp;rsquo;un &amp;ldquo;buffer overflow&amp;rdquo; ? Avan
       <pubDate>Sun, 17 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>https://www.mycybersharing.com/cybersecu/app_sys_start_gradually/</guid>
-      <description>&amp;ldquo;App-Sys&amp;rdquo;, vous avez dit ? Oui, &amp;ldquo;App-Sys&amp;rdquo; :) C&amp;rsquo;est le principe d&amp;rsquo;exploiter une vulnérabilité applicative principalement liée à une erreur de développement et qui peut finir par aboutir à des corruptions de différentes zones mémoire. L&amp;rsquo;objectif ici c&amp;rsquo;est d&amp;rsquo;aborder pas-à-pas ce domaine en passant par les registres, la structure d&amp;rsquo;un exécutable, la pile, le tas&amp;hellip; bref, des choses compliquées pour un débutant qui souhaite se lancer dans l&amp;rsquo;exploitation de failles systèmes.</description>
+      <description>&amp;ldquo;Application - Système&amp;rdquo;, vous avez dit ? Oui, &amp;ldquo;Application - Système&amp;rdquo; :) C&amp;rsquo;est le principe d&amp;rsquo;exploiter une vulnérabilité applicative principalement liée à une erreur de développement et qui peut finir par aboutir à des corruptions de différentes zones mémoire. L&amp;rsquo;objectif ici c&amp;rsquo;est d&amp;rsquo;aborder pas-à-pas ce domaine en passant par les registres, la structure d&amp;rsquo;un exécutable, la pile, le tas&amp;hellip; bref, des choses compliquées pour un débutant qui souhaite se lancer dans l&amp;rsquo;exploitation de failles systèmes.</description>
     </item>
     
   </channel>
