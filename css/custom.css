@@ -33,6 +33,10 @@
 	background-color: #304235;
 }
 
+.content {
+  word-break: break-word;
+}
+
 @media (min-width: 992px) {
   html,
   body {

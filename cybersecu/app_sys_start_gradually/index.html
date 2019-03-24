@@ -214,7 +214,7 @@ add ah, 3		; effectue une addition : 	ah = ah + 3 (&quot;ah&quot; vaut 8 du coup
 <br />
 En réalité, le petit mot-clé au début de l&rsquo;instruction est appellé un &ldquo;<strong>opcode</strong>&rdquo; (code opération) et permet de déterminer la nature de l&rsquo;instruction. &ldquo;mov&rdquo; est donc un opcode parmis tant d&rsquo;autres.</p>
 
-<p><img src="/img/instruction.jpg" alt="C8086" /></p>
+<p><img src="/img/instruction.jpg" alt="instruction" /></p>
 
 <h2 id="les-registres-pour-nos-calcules">Les registres pour nos calcules</h2>
 
@@ -237,7 +237,7 @@ Voici la liste des registres les plus importants:</p>
 
 <p><em>La pile est expliquée plus bas, ne vous inquiétez pas ;)</em></p>
 
-<p><img src="/img/register.jpg" alt="C8086" /></p>
+<p><img src="/img/register.jpg" alt="register" /></p>
 
 <p>Ces registres sont utilisés par les différentes instructions du programme.</p>
 
@@ -297,7 +297,7 @@ Pour faire simple, un programme a l&rsquo;impression qu&rsquo;il possède toute 
 <li>Adresse physique : c&rsquo;est les adresses utilisées physiquement par les puces présentes sur les barrettes de RAM</li>
 </ul>
 
-<p><img src="/img/virtual_memory.jpg" alt="C8086" /></p>
+<p><img src="/img/virtual_memory.jpg" alt="virtual memory" /></p>
 
 <p>Voilà pourquoi un programme peut utiliser les mêmes adresses virtuelles mais pas les mêmes adresses physiques. On place en quelque sorte notre programme dans des bacs à sable (<a href="https://fr.wikipedia.org/wiki/Sandbox_(s%C3%A9curit%C3%A9_informatique)">sandbox</a>) et c&rsquo;est le noyau du système d&rsquo;exploitation qui gère les opérations de plus bas niveau en relation avec le matériel.</p>
 
@@ -321,7 +321,7 @@ Les principaux segments sont :</p>
 
 <p>Cette liste n&rsquo;est pas complète mais les principaux segments y sont. Ne vous inquiétez pas si vous n&rsquo;avez pas très bien compris à quoi servaient les segments. Par la suite, avec la pratique cela viendra :)</p>
 
-<p><img src="/img/segments.jpg" alt="C8086" /></p>
+<p><img src="/img/segments.jpg" alt="segments" /></p>
 
 <p>Ce schéma illustre une représentation de la mémoire virtuelle d&rsquo;un programme. La position des segments ne change pas d&rsquo;une exécution à l&rsquo;autre et reste toujours dans cet ordre.<br />
 Nous pouvons constater que la pile grossie du haut vers le bas et que le tas grossit du bas vers le haut. La taille de ces deux segments n&rsquo;est donc pas fixe.</p>
@@ -330,11 +330,11 @@ Nous pouvons constater que la pile grossie du haut vers le bas et que le tas gro
 
 <p>Ça!</p>
 
-<p><img src="/img/stack_1.jpg" alt="C8086" /></p>
+<p><img src="/img/stack_1.jpg" alt="stack" /></p>
 
 <p>Bon d&rsquo;accord, pas exactement mais il y a des points communs avec la pile de notre programme. La pile est une structure LIFO, c&rsquo;est-à-dire que le dernier élément ajouté sera le premier à être retiré. Quand on empile des assiettes les unes sur les autres, il faut d&rsquo;abord retirer la première pour ensuite retirer la deuxième assiette de la pile.</p>
 
-<p><img src="/img/stack_2.jpg" alt="C8086" /></p>
+<p><img src="/img/stack_2.jpg" alt="stack" /></p>
 
 <p>La pile est principalement utilisée pour stocker les données nécessaires à l&rsquo;exécution d&rsquo;une fonction et également préserver le pointeur d&rsquo;exécution (registre EIP) afin de reprendre l&rsquo;exécution de cette fonction. On y retrouve les arguments de notre fonction mais également les variables locales à celle-ci. Toutes ces choses-là sont appelées la <strong>stack frame</strong> (cadre de pile).</p>
 
@@ -410,7 +410,7 @@ mov    ebp,esp
 
 <p>Ces deux instructions au début de la fonction &ldquo;addition&rdquo; sont appelées le <strong>prologue</strong>. Elles permettent dans un premier temps de sauvegarder le bas de la pile courante et ensuite d&rsquo;en initialiser une nouvelle. Attendez, laissez-moi vous faire un schéma pour que ça soit plus simple !</p>
 
-<p><img src="/img/stack_frame.jpg" alt="C8086" /></p>
+<p><img src="/img/stack_frame.jpg" alt="stack frame" /></p>
 
 <p>Vous voyez que la stack frame de &ldquo;addition&rdquo; est vide, parce qu&rsquo;elle n&rsquo;a pas encore été utilisée. De ce fait, le pointeur ESP est identique au pointeur EBP (ils sont confondus). Quand la stack frame de &ldquo;addition&rdquo; va être consommée, alors le pointeur ESP va monter vers les adresses les plus basses.<br />
 Maintenant voyons comment récupérer les arguments qui ont été passés à la fonction &ldquo;addition&rdquo;.</p>
@@ -444,7 +444,7 @@ ret
 
 <p>Vous vous souvenez que dans le prologue EBP a été poussé en haut de la pile ? L&rsquo;instruction &ldquo;leave&rdquo; va maintenant utiliser cette valeur pour restaurer la stack frame de main :</p>
 
-<p><img src="/img/stack_frame_restore.jpg" alt="C8086" /></p>
+<p><img src="/img/stack_frame_restore.jpg" alt="stack frame restore" /></p>
 
 <p>Dans l&rsquo;ordre, l&rsquo;instruction leave va effectuer ceci :</p>
 
@@ -487,7 +487,7 @@ EIP: 0x8048478 (&lt;main+29&gt;:	add    esp,0x10)
 0004| 0xffffc564 --&gt; 0x8
 </code></pre>
 
-<p><img src="/img/stack_call.gif" alt="C8086" /></p>
+<p><img src="/img/stack_call.gif" alt="stack call" /></p>
 
 <h3 id="le-mot-de-la-fin">Le mot de la fin</h3>
 
@@ -500,6 +500,11 @@ EIP: 0x8048478 (&lt;main+29&gt;:	add    esp,0x10)
 
 <div class="navigation navigation-single">
     
+    
+    <a href="/cybersecu/app_sys_buffer_overflow/" class="navigation-next">
+      <span class="navigation-tittle">App-Sys: Sur les traces d&#39;un buffer overflow</span>
+      <i aria-hidden="true" class="fa fa-chevron-right"></i>
+    </a>
     
 </div>
 

@@ -6,10 +6,22 @@
     <description>Recent content on My Cyber Sharing</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>fr</language>
-    <lastBuildDate>Sun, 17 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 22 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.mycybersharing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>App-Sys: Sur les traces d&#39;un buffer overflow</title>
+      <link>https://www.mycybersharing.com/cybersecu/app_sys_buffer_overflow/</link>
+      <pubDate>Fri, 22 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.mycybersharing.com/cybersecu/app_sys_buffer_overflow/</guid>
+      <description>Prérequis Avant de commencer, il est nécessaire d&amp;rsquo;avoir quelques bases en exploitation applicative système.
+Il faut donc connaître le fonctionnement du processeur, les registres, la structure d&amp;rsquo;un programme et surtout le fonctionnement de la pile.
+Pour cela, si ce n&amp;rsquo;est déjà fait, je vous invite à lire mon article &amp;ldquo;Débuter progressivement&amp;rdquo;.
+Quel est le principe d&amp;rsquo;un &amp;ldquo;buffer overflow&amp;rdquo; ? Avant de parler du &amp;ldquo;overflow&amp;rdquo;, nous allons déjà parler du &amp;ldquo;buffer&amp;rdquo;.</description>
+    </item>
     
     <item>
       <title></title>
