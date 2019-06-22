@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://www.mycybersharing.com/biology/</loc>
+    <lastmod>2019-06-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.mycybersharing.com/</loc>
+    <lastmod>2019-06-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
   
   <url>
     <loc>https://www.mycybersharing.com/biology/what_is_adn/</loc>
@@ -9,6 +22,12 @@
   <url>
     <loc>https://www.mycybersharing.com/cybersecu/app_sys_buffer_overflow/</loc>
     <lastmod>2019-03-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://www.mycybersharing.com/cybersecu/</loc>
+    <lastmod>2019-03-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -22,20 +41,12 @@
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.com/biology/</loc>
-    <lastmod>2019-06-12T00:00:00+00:00</lastmod>
+    <loc>https://www.mycybersharing.com/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://www.mycybersharing.com/cybersecu/</loc>
-    <lastmod>2019-03-22T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.mycybersharing.com/</loc>
-    <lastmod>2019-06-12T00:00:00+00:00</lastmod>
+    <loc>https://www.mycybersharing.com/tags/</loc>
     <priority>0</priority>
   </url>
   
