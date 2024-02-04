@@ -232,7 +232,7 @@ Parce que vous n&rsquo;avez pas forcément les droits nécessaires :p Sur une ma
 <p>Quelques exemples motivant un attaquant à exploiter un buffer overflow :</p>
 
 <ul>
-<li>Un service en écoute sur un port est vulnérable à un buffer overflow. Un attaquant souhaite prendre le contrôle à distance sur ce serveur (dans un premier temps). Pour cela il va forger une requête particulière afin d&rsquo;exploiter le buffer overflow en exécutant un code arbitraire qui va lui permettant d&rsquo;obtenir un reverse shell (un shell qui vient se conecter sur la machine de l&rsquo;attaquant).</li>
+<li>Un service en écoute sur un port est vulnérable à un buffer overflow. Un attaquant souhaite prendre le contrôle à distance sur ce serveur (dans un premier temps). Pour cela il va forger une requête particulière afin d&rsquo;exploiter le buffer overflow en exécutant un code arbitraire qui va lui permettant d&rsquo;obtenir un reverse shell (un shell qui vient se connecter sur la machine de l&rsquo;attaquant).</li>
 <li>Cette fois, l&rsquo;attaquant à la main sur la machine mais possède des privilèges limités. Pour les obtenir, il va exploiter un programme vulnérable à un buffer overflow et qui tourne avec des privilèges élevés afin d&rsquo;obtenir un shell possédant les pleins pouvoirs.</li>
 <li>Maintenant aucun service n&rsquo;est vulnérable et l&rsquo;attaquant n&rsquo;a pas la main sur la machine. Dans un premier temps, il va utiliser de l&rsquo;ingénierie sociale (manipulation de l&rsquo;être humain) pour réussir à faire télécharger un fichier à sa victime. Ensuite, un buffer overflow peut être exploité par l&rsquo;un des logiciels de lectures du fichier (lecteur vidéo, photo, PDF, musique&hellip;) et l&rsquo;attaquant pourra obtenir un reverse shell au moment où sa victime ouvrira le fichier. Ce genre de faille ont été présentes dans certaines versions de Adobe Reader (le lecteur de PDF).</li>
 </ul>
@@ -422,7 +422,7 @@ Segmentation fault (core dumped)
 $
 </code></pre>
 
-<p>Ça vous voyez, c&rsquo;est très bon signe ! Nous venons de déborder le buffer réservé pour notre prénom, nous sommes allés réécrire des données présentes après le buffer et l&rsquo;application a crashée.</p>
+<p>Ça vous voyez, c&rsquo;est très bon signe ! Nous venons de déborder le buffer réservé pour notre prénom, nous sommes allés réécrire des données présentes après le buffer et l&rsquo;application a crashé.</p>
 
 <p>L&rsquo;erreur <strong>&ldquo;Segmentation fault&rdquo;</strong> indique que l&rsquo;application a tentée d&rsquo;accéder à un emplacement mémoire qui ne lui était pas attribué. De ce fait, l&rsquo;OS a inévitablement interrompu son exécution.</p>
 
@@ -454,7 +454,7 @@ Nous allons lister les fonctions présentes afin d&rsquo;y voir plus clair :</p>
 <p><img src="/img/gdb_functions.jpg" alt="gdb_functions" /></p>
 
 <p><strong><em>Mais&hellip; il y en a beaucoup pour un simple programme !</em></strong><br />
-Toutes les fonctions commençant par un underscore ou finissants par &ldquo;@plt&rdquo; ne sont souvent pas des fonctions développées par le développeur. C&rsquo;est des fonctions présentes dans des bibliothèques partagées ou qui ont été rajoutées par le compilateur permettant d&rsquo;initialiser le programme ou de le fermer proprement. Du coup ça en élimine plusieurs. Les fonctions &ldquo;&hellip;register&hellip;clones&rdquo; et &ldquo;frame_dummy&rdquo; peuvent également être ignorées.<br />
+Toutes les fonctions commençant par un underscore ou finissants par &ldquo;@plt&rdquo; ne sont souvent pas des fonctions développées par le développeur. Ce sont des fonctions présentes dans des bibliothèques partagées ou qui ont été rajoutées par le compilateur permettant d&rsquo;initialiser le programme ou de le fermer proprement. Du coup ça en élimine plusieurs. Les fonctions &ldquo;&hellip;register&hellip;clones&rdquo; et &ldquo;frame_dummy&rdquo; peuvent également être ignorées.<br />
 Bon allez, voici une commande permettant d&rsquo;afficher uniquement les fonctions ne commençant pas par un underscore et ne possédant pas de &ldquo;@&rdquo; :</p>
 
 <p><img src="/img/gdb_functions_filter.jpg" alt="gdb_functions_filter" /></p>
@@ -499,7 +499,7 @@ Maintenant remontez un peu plus haut dans GDB afin de voir quelle était l&rsquo
 
 <p><img src="/img/overflow_pattern.jpg" alt="overflow pattern" /></p>
 
-<p>Vous voyez le souci ? Nous avons réécrit la sauvegarde de EIP servant à reprendre l&rsquo;exécution de la fonction &ldquo;main&rdquo; et l&rsquo;instruction &ldquo;ret&rdquo; l&rsquo;a copiée dans le registre EIP. Le problème c&rsquo;est que cette sauvegarde a été altérée par notre pattern et ne correspond pas à une adresse valide&hellip; du coup l&rsquo;application a crashée.</p>
+<p>Vous voyez le souci ? Nous avons réécrit la sauvegarde de EIP servant à reprendre l&rsquo;exécution de la fonction &ldquo;main&rdquo; et l&rsquo;instruction &ldquo;ret&rdquo; l&rsquo;a copiée dans le registre EIP. Le problème c&rsquo;est que cette sauvegarde a été altérée par notre pattern et ne correspond pas à une adresse valide&hellip; du coup l&rsquo;application a crashé.</p>
 
 <p><img src="/img/gdb_overflow_eip.jpg" alt="gdb overflow eip" /></p>
 
